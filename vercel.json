@@ -41,9 +41,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "VITE_API_URL": "@vite_api_url",
-    "VITE_API_SECRET_KEY": "@vite_api_secret_key"
-  }
+  ]
 }
