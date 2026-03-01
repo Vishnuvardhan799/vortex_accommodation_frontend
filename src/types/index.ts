@@ -70,6 +70,44 @@ export interface ApiError extends Error {
   existingEntry?: Partial<AccommodationEntry>;
 }
 
+// Event and Workshop Registration Types
+export interface EventRegistrationRequest {
+  name: string;
+  email: string;
+  phone: string;
+  eventNames: string[];
+  teamName?: string;
+  paymentStatus: 'Paid' | 'Pending' | 'Waived';
+  notes?: string;
+  force?: boolean;
+}
+
+export interface WorkshopRegistrationRequest {
+  name: string;
+  email: string;
+  phone: string;
+  workshopNames: string[];
+  paymentStatus: 'Paid' | 'Pending' | 'Waived';
+  notes?: string;
+  force?: boolean;
+}
+
+export interface EventRegistrationResponse {
+  success: boolean;
+  message: string;
+  entry?: any;
+  duplicate?: boolean;
+  existingEntry?: any;
+}
+
+export interface WorkshopRegistrationResponse {
+  success: boolean;
+  message: string;
+  entry?: any;
+  duplicate?: boolean;
+  existingEntry?: any;
+}
+
 // Valid dates for the event (To Date starts from March 7th)
 export const VALID_DATES = ['2026-03-06', '2026-03-07', '2026-03-08'] as const;
 export const VALID_TO_DATES = ['2026-03-07', '2026-03-08'] as const;
@@ -79,3 +117,7 @@ export type ValidToDate = typeof VALID_TO_DATES[number];
 // Valid accommodation types
 export const ACCOMMODATION_TYPES = ['Boys', 'Girls', 'Other'] as const;
 export type AccommodationType = typeof ACCOMMODATION_TYPES[number];
+
+// Payment status types
+export const PAYMENT_STATUSES = ['Paid', 'Pending', 'Waived'] as const;
+export type PaymentStatus = typeof PAYMENT_STATUSES[number];

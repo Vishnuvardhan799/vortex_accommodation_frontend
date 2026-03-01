@@ -4,6 +4,10 @@ import type {
   SearchResponse,
   AccommodationRequest,
   AccommodationResponse,
+  EventRegistrationRequest,
+  EventRegistrationResponse,
+  WorkshopRegistrationRequest,
+  WorkshopRegistrationResponse,
   ApiError,
   ErrorState,
 } from '../types';
@@ -145,6 +149,22 @@ class ApiClient {
   }
 
   /**
+   * Register participant for an event
+   */
+  async registerEvent(data: EventRegistrationRequest): Promise<EventRegistrationResponse> {
+    const response = await this.client.post<EventRegistrationResponse>('/api/events/register', data);
+    return response.data;
+  }
+
+  /**
+   * Register participant for a workshop
+   */
+  async registerWorkshop(data: WorkshopRegistrationRequest): Promise<WorkshopRegistrationResponse> {
+    const response = await this.client.post<WorkshopRegistrationResponse>('/api/workshops/register', data);
+    return response.data;
+  }
+
+  /**
    * Health check
    */
   async healthCheck(): Promise<{ status: string }> {
@@ -159,4 +179,6 @@ export const apiClient = new ApiClient();
 // Export functions for easier usage
 export const searchParticipant = (email: string) => apiClient.searchParticipant(email);
 export const addAccommodation = (data: AccommodationRequest) => apiClient.addAccommodation(data);
+export const registerEvent = (data: EventRegistrationRequest) => apiClient.registerEvent(data);
+export const registerWorkshop = (data: WorkshopRegistrationRequest) => apiClient.registerWorkshop(data);
 export const healthCheck = () => apiClient.healthCheck();

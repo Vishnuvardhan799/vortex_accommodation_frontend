@@ -1,43 +1,79 @@
 import React, { useState } from "react";
+import { registerEvent, registerWorkshop } from "../services/api";
+
+// Available workshops and events
+const WORKSHOPS = [
+  "UI/UX",
+  "Quantum Computing",
+  "Building AI with MongoDB",
+  "Cybersecurity & Ethical Hacking",
+  "Data Structures & Algorithms",
+  "Agentic & Generative AI",
+  "Software Development",
+  "Web Development",
+  "Security of Agentic AI",
+  "Financial Literacy",
+];
+
+const EVENTS = [
+  "Linked",
+  "Numpy",
+  "Webbed",
+  "Summer Internship",
+  "Vortex Quizbits",
+  "What the figma",
+  "Poster Presentation",
+  "Code Combat",
+  "Debug the code",
+];
 
 interface EventRegistrationFormData {
   name: string;
   email: string;
   phone: string;
-  college: string;
   eventType: "event" | "workshop";
-  eventName: string;
+  selectedItems: string[];
+  teamName?: string;
+  paymentStatus: "Paid" | "Pending" | "Waived";
   notes?: string;
 }
 
 interface EventRegistrationFormProps {
-  onSubmit: (data: EventRegistrationFormData) => Promise<void>;
-  isLoading?: boolean;
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+  registrationType?: "event" | "workshop";
 }
 
 export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
-  onSubmit,
-  isLoading = false,
+  onSuccess,
+  onError,
+  registrationType = "event",
 }) => {
   const [formData, setFormData] = useState<EventRegistrationFormData>({
     name: "",
     email: "",
     phone: "",
-    college: "",
-    eventType: "event",
-    eventName: "",
+    eventType: registrationType, // Keep for backward compatibility but use registrationType prop
+    selectedItems: [],
+    teamName: "",
+    paymentStatus: "Pending",
     notes: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const validateField = (name: string, value: string): string | undefined => {
+  const validateField = (name: string, value: any): string | undefined => {
     switch (name) {
       case "name":
-      case "college":
-      case "eventName":
         return !value.trim() ? "This field is required" : undefined;
+
+      case "selectedItems":
+        return !value || value.length === 0
+          ? "Please select at least one item"
+          : undefined;
 
       case "email":
         if (!value.trim()) return "Email is required";
@@ -70,6 +106,25 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
     }
   };
 
+  const handleItemToggle = (item: string) => {
+    setFormData((prev) => {
+      const isSelected = prev.selectedItems.includes(item);
+      const newSelectedItems = isSelected
+        ? prev.selectedItems.filter((i) => i !== item)
+        : [...prev.selectedItems, item];
+
+      return { ...prev, selectedItems: newSelectedItems };
+    });
+
+    if (touched.selectedItems) {
+      const newSelectedItems = formData.selectedItems.includes(item)
+        ? formData.selectedItems.filter((i) => i !== item)
+        : [...formData.selectedItems, item];
+      const error = validateField("selectedItems", newSelectedItems);
+      setErrors((prev) => ({ ...prev, selectedItems: error || "" }));
+    }
+  };
+
   const handleBlur = (
     e: React.FocusEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -83,29 +138,82 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSuccessMessage(null);
 
     const newTouched: Record<string, boolean> = {
       name: true,
       email: true,
       phone: true,
-      college: true,
-      eventName: true,
+      selectedItems: true,
     };
     setTouched(newTouched);
 
     const newErrors: Record<string, string> = {};
-    Object.keys(newTouched).forEach((key) => {
-      const error = validateField(
-        key,
-        formData[key as keyof EventRegistrationFormData] as string,
-      );
-      if (error) newErrors[key] = error;
+    newErrors.name = validateField("name", formData.name) || "";
+    newErrors.email = validateField("email", formData.email) || "";
+    newErrors.phone = validateField("phone", formData.phone) || "";
+    newErrors.selectedItems =
+      validateField("selectedItems", formData.selectedItems) || "";
+
+    // Remove empty errors
+    Object.keys(newErrors).forEach((key) => {
+      if (!newErrors[key]) delete newErrors[key];
     });
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      await onSubmit(formData);
+      setIsLoading(true);
+      try {
+        // Register all selected items in a single request
+        if (registrationType === "event") {
+          const eventData = {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            eventNames: formData.selectedItems,
+            teamName: formData.teamName || undefined,
+            paymentStatus: formData.paymentStatus,
+            notes: formData.notes || undefined,
+            force: false,
+          };
+          await registerEvent(eventData);
+        } else {
+          const workshopData = {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            workshopNames: formData.selectedItems,
+            paymentStatus: formData.paymentStatus,
+            notes: formData.notes || undefined,
+            force: false,
+          };
+          await registerWorkshop(workshopData);
+        }
+
+        setSuccessMessage("Successfully registered!");
+
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          eventType: registrationType,
+          selectedItems: [],
+          teamName: "",
+          paymentStatus: "Pending",
+          notes: "",
+        });
+        setTouched({});
+        setErrors({});
+
+        if (onSuccess) onSuccess();
+      } catch (error: any) {
+        console.error("Registration error:", error);
+        if (onError) onError(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -117,8 +225,14 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
     <div className="w-full max-w-2xl mx-auto">
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Register for Event or Workshop
+          Register for {registrationType === "event" ? "Events" : "Workshops"}
         </h2>
+
+        {successMessage && (
+          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-800">{successMessage}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -201,79 +315,96 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
           </div>
 
           <div>
-            <label
-              htmlFor="college"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              College <span className="text-error-500">*</span>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Select {registrationType === "event" ? "Events" : "Workshops"}{" "}
+              <span className="text-error-500">*</span>
             </label>
-            <input
-              id="college"
-              name="college"
-              type="text"
-              value={formData.college}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              disabled={isLoading}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                getFieldError("college")
-                  ? "border-error-500 focus:ring-error-500"
-                  : "border-gray-300 focus:ring-primary-500"
-              } ${isLoading ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
-            />
-            {getFieldError("college") && (
-              <p className="mt-1 text-sm text-error-600">{errors.college}</p>
+            <div
+              className={`border rounded-lg p-4 max-h-64 overflow-y-auto ${
+                getFieldError("selectedItems")
+                  ? "border-error-500"
+                  : "border-gray-300"
+              } ${isLoading ? "bg-gray-100" : "bg-white"}`}
+            >
+              <div className="space-y-2">
+                {(registrationType === "event" ? EVENTS : WORKSHOPS).map(
+                  (item) => (
+                    <label
+                      key={item}
+                      className={`flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer ${
+                        isLoading ? "cursor-not-allowed opacity-50" : ""
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedItems.includes(item)}
+                        onChange={() => handleItemToggle(item)}
+                        disabled={isLoading}
+                        className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      />
+                      <span className="ml-3 text-sm text-gray-700">{item}</span>
+                    </label>
+                  ),
+                )}
+              </div>
+            </div>
+            {formData.selectedItems.length > 0 && (
+              <p className="mt-2 text-sm text-gray-600">
+                Selected: {formData.selectedItems.length} In Total
+                {/* {formData.selectedItems.length > 1 ? "s" : ""} */}
+              </p>
+            )}
+            {getFieldError("selectedItems") && (
+              <p className="mt-1 text-sm text-error-600">
+                {errors.selectedItems}
+              </p>
             )}
           </div>
 
+          {registrationType === "event" && (
+            <div>
+              <label
+                htmlFor="teamName"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Team Name (Optional)
+              </label>
+              <input
+                id="teamName"
+                name="teamName"
+                type="text"
+                value={formData.teamName}
+                onChange={handleChange}
+                disabled={isLoading}
+                placeholder="Enter team name if applicable"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors border-gray-300 focus:ring-primary-500 ${
+                  isLoading ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+                }`}
+              />
+            </div>
+          )}
+
           <div>
             <label
-              htmlFor="eventType"
+              htmlFor="paymentStatus"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Registration Type <span className="text-error-500">*</span>
+              Payment Status <span className="text-error-500">*</span>
             </label>
             <select
-              id="eventType"
-              name="eventType"
-              value={formData.eventType}
+              id="paymentStatus"
+              name="paymentStatus"
+              value={formData.paymentStatus}
               onChange={handleChange}
               disabled={isLoading}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors border-gray-300 focus:ring-primary-500 ${
                 isLoading ? "bg-gray-100 cursor-not-allowed" : "bg-white"
               }`}
             >
-              <option value="event">Event</option>
-              <option value="workshop">Workshop</option>
+              <option value="Pending">Pending</option>
+              <option value="Paid">Paid</option>
+              <option value="Waived">Waived</option>
             </select>
-          </div>
-
-          <div>
-            <label
-              htmlFor="eventName"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              {formData.eventType === "event" ? "Event" : "Workshop"} Name{" "}
-              <span className="text-error-500">*</span>
-            </label>
-            <input
-              id="eventName"
-              name="eventName"
-              type="text"
-              value={formData.eventName}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              disabled={isLoading}
-              placeholder={`Enter ${formData.eventType} name`}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                getFieldError("eventName")
-                  ? "border-error-500 focus:ring-error-500"
-                  : "border-gray-300 focus:ring-primary-500"
-              } ${isLoading ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
-            />
-            {getFieldError("eventName") && (
-              <p className="mt-1 text-sm text-error-600">{errors.eventName}</p>
-            )}
           </div>
 
           <div>

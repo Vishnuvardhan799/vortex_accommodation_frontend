@@ -25,6 +25,12 @@ const EventRegistrationForm = lazy(() =>
   })),
 );
 
+const WorkshopRegistrationForm = lazy(() =>
+  import("./components/EventRegistrationForm").then((module) => ({
+    default: module.EventRegistrationForm,
+  })),
+);
+
 const DuplicateWarningModal = lazy(() =>
   import("./components/DuplicateWarningModal").then((module) => ({
     default: module.DuplicateWarningModal,
@@ -245,33 +251,21 @@ function App() {
     }));
   };
 
-  const handleEventRegistration = async (data: any): Promise<void> => {
+  const handleEventRegistrationSuccess = (): void => {
     setState((prev) => ({
       ...prev,
-      isSubmitting: true,
-      error: null,
-      successMessage: null,
+      successMessage: "Registration successful!",
     }));
+  };
 
-    // Placeholder for event registration logic
-    // This will be implemented when backend endpoint is ready
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setState((prev) => ({
-        ...prev,
-        isSubmitting: false,
-        successMessage: `Successfully registered for ${data.eventType}: ${data.eventName}`,
-      }));
-    } catch (err) {
-      setState((prev) => ({
-        ...prev,
-        isSubmitting: false,
-        error: {
-          type: "unknown",
-          message: "Failed to register for event. Please try again.",
-        },
-      }));
-    }
+  const handleEventRegistrationError = (error: any): void => {
+    setState((prev) => ({
+      ...prev,
+      error: {
+        type: error.type || "unknown",
+        message: error.message || "Failed to register. Please try again.",
+      },
+    }));
   };
 
   return (
@@ -389,13 +383,27 @@ function App() {
           </section>
         )}
 
-        {/* Events & Workshops Section */}
+        {/* Events Section */}
         {state.activeSection === "events" && (
           <section>
             <Suspense fallback={<LoadingFallback />}>
               <EventRegistrationForm
-                onSubmit={handleEventRegistration}
-                isLoading={state.isSubmitting}
+                onSuccess={handleEventRegistrationSuccess}
+                onError={handleEventRegistrationError}
+                registrationType="event"
+              />
+            </Suspense>
+          </section>
+        )}
+
+        {/* Workshops Section */}
+        {state.activeSection === "workshops" && (
+          <section>
+            <Suspense fallback={<LoadingFallback />}>
+              <WorkshopRegistrationForm
+                onSuccess={handleEventRegistrationSuccess}
+                onError={handleEventRegistrationError}
+                registrationType="workshop"
               />
             </Suspense>
           </section>
