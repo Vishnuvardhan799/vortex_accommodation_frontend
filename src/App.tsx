@@ -142,28 +142,16 @@ function App() {
     } catch (err) {
       const apiError = err as ApiError;
 
-      // Handle duplicate error specially
-      if (apiError.type === "duplicate" && apiError.existingEntry) {
-        setState((prev) => ({
-          ...prev,
-          isSubmitting: false,
-          showDuplicateModal: true,
-          duplicateData: {
-            existingEntry: apiError.existingEntry!,
-            newEntry: data,
-          },
-        }));
-      } else {
-        setState((prev) => ({
-          ...prev,
-          isSubmitting: false,
-          error: {
-            type: apiError.type || "unknown",
-            message: apiError.message,
-            details: apiError.details,
-          },
-        }));
-      }
+      // Show simple error message for all errors including duplicates
+      setState((prev) => ({
+        ...prev,
+        isSubmitting: false,
+        error: {
+          type: apiError.type || "unknown",
+          message: apiError.message,
+          details: apiError.details,
+        },
+      }));
     }
   };
 
