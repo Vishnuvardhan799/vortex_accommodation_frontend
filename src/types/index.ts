@@ -111,7 +111,7 @@ export interface WorkshopRegistrationResponse {
 }
 
 // Valid dates for the event (To Date starts from March 7th)
-export const VALID_DATES = ['2026-03-06', '2026-03-07', '2026-03-08'] as const;
+export const VALID_DATES = ['2026-03-06', '2026-03-07'] as const;
 export const VALID_TO_DATES = ['2026-03-07', '2026-03-08'] as const;
 export type ValidDate = typeof VALID_DATES[number];
 export type ValidToDate = typeof VALID_TO_DATES[number];
