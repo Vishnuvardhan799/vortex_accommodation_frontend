@@ -29,12 +29,27 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = memo(
 
           {/* Content */}
           <div className="p-6 space-y-6">
-            {/* College */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                College
-              </h3>
-              <p className="text-lg text-gray-900">{college}</p>
+            {/* Basic Info Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Phone */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Phone Number
+                </h3>
+                <p className="text-lg text-gray-900">
+                  {participant.phone || "Not provided"}
+                </p>
+              </div>
+
+              {/* College */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  College
+                </h3>
+                <p className="text-lg text-gray-900">
+                  {college || "Not provided"}
+                </p>
+              </div>
             </div>
 
             {/* Accommodation Status */}

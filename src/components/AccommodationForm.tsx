@@ -10,6 +10,9 @@ import {
 interface AccommodationFormProps {
   onSubmit: (data: AccommodationFormData) => Promise<void>;
   initialEmail?: string;
+  initialName?: string;
+  initialPhone?: string;
+  initialCollege?: string;
   isLoading?: boolean;
   onReset?: () => void;
   showResetButton?: boolean;
@@ -29,15 +32,18 @@ interface FormErrors {
 export const AccommodationForm: React.FC<AccommodationFormProps> = ({
   onSubmit,
   initialEmail,
+  initialName,
+  initialPhone,
+  initialCollege,
   isLoading = false,
   onReset,
   showResetButton = false,
 }) => {
   const [formData, setFormData] = useState<AccommodationFormData>({
-    name: "",
+    name: initialName || "",
     email: initialEmail || "",
-    phone: "",
-    college: "",
+    phone: initialPhone || "",
+    college: initialCollege || "",
     fromDate: "",
     toDate: "",
     accommodationType: "Boys",
@@ -48,12 +54,18 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // Update email when initialEmail changes
+  // Update form when initial values change
   useEffect(() => {
     if (initialEmail) {
-      setFormData((prev) => ({ ...prev, email: initialEmail }));
+      setFormData((prev) => ({
+        ...prev,
+        email: initialEmail,
+        name: initialName || prev.name,
+        phone: initialPhone || prev.phone,
+        college: initialCollege || prev.college,
+      }));
     }
-  }, [initialEmail]);
+  }, [initialEmail, initialName, initialPhone, initialCollege]);
 
   const validateField = (
     name: keyof AccommodationFormData,

@@ -5,6 +5,7 @@
 export interface ParticipantData {
   name: string;
   email: string;
+  phone?: string;
   college: string;
   events: string[];
   workshops: string[];

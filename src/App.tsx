@@ -363,6 +363,9 @@ function App() {
               <AccommodationForm
                 onSubmit={handleAddAccommodation}
                 initialEmail={state.searchResults?.email}
+                initialName={state.searchResults?.name}
+                initialPhone={state.searchResults?.phone}
+                initialCollege={state.searchResults?.college}
                 isLoading={state.isSubmitting}
                 onReset={handleReset}
                 showResetButton={!!state.successMessage}
