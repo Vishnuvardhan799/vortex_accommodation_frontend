@@ -41,6 +41,7 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
     fromDate: "",
     toDate: "",
     accommodationType: "Boys",
+    paymentStatus: "Pending",
     notes: "",
   });
 
@@ -187,6 +188,7 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
       fromDate: "",
       toDate: "",
       accommodationType: "Boys",
+      paymentStatus: "Pending",
       notes: "",
     });
 
@@ -538,6 +540,30 @@ export const AccommodationForm: React.FC<AccommodationFormProps> = ({
                 {errors.accommodationType}
               </p>
             )}
+          </div>
+
+          {/* Payment Status */}
+          <div>
+            <label
+              htmlFor="paymentStatus"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Payment Status <span className="text-error-500">*</span>
+            </label>
+            <select
+              id="paymentStatus"
+              name="paymentStatus"
+              value={formData.paymentStatus}
+              onChange={handleChange}
+              disabled={isLoading}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors border-gray-300 focus:ring-primary-500 ${
+                isLoading ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+              }`}
+            >
+              <option value="Pending">Pending</option>
+              <option value="Paid">Paid</option>
+              <option value="Waived">Waived</option>
+            </select>
           </div>
 
           {/* Notes */}

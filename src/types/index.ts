@@ -27,6 +27,7 @@ export interface AccommodationFormData {
   fromDate: string;
   toDate: string;
   accommodationType: 'Boys' | 'Girls' | 'Other';
+  paymentStatus: 'Paid' | 'Pending' | 'Waived';
   notes?: string;
 }
 
