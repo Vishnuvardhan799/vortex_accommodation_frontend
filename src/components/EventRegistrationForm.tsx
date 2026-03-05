@@ -12,7 +12,6 @@ const WORKSHOPS = [
   "Software Development",
   "Web Development",
   "Security of Agentic AI",
-  "Financial Literacy",
 ];
 
 const EVENTS = [
