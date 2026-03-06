@@ -382,6 +382,10 @@ function App() {
                 onSuccess={handleEventRegistrationSuccess}
                 onError={handleEventRegistrationError}
                 registrationType="event"
+                initialEmail={state.searchResults?.email}
+                initialName={state.searchResults?.name}
+                initialPhone={state.searchResults?.phone}
+                initialCollege={state.searchResults?.college}
               />
             </Suspense>
           </section>
@@ -395,6 +399,10 @@ function App() {
                 onSuccess={handleEventRegistrationSuccess}
                 onError={handleEventRegistrationError}
                 registrationType="workshop"
+                initialEmail={state.searchResults?.email}
+                initialName={state.searchResults?.name}
+                initialPhone={state.searchResults?.phone}
+                initialCollege={state.searchResults?.college}
               />
             </Suspense>
           </section>

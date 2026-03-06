@@ -41,17 +41,25 @@ interface EventRegistrationFormProps {
   onSuccess?: () => void;
   onError?: (error: any) => void;
   registrationType?: "event" | "workshop";
+  initialEmail?: string;
+  initialName?: string;
+  initialPhone?: string;
+  initialCollege?: string;
 }
 
 export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
   onSuccess,
   onError,
   registrationType = "event",
+  initialEmail = "",
+  initialName = "",
+  initialPhone = "",
+  initialCollege = "",
 }) => {
   const [formData, setFormData] = useState<EventRegistrationFormData>({
-    name: "",
-    email: "",
-    phone: "",
+    name: initialName,
+    email: initialEmail,
+    phone: initialPhone,
     eventType: registrationType, // Keep for backward compatibility but use registrationType prop
     selectedItems: [],
     teamName: "",
