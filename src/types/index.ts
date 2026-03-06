@@ -9,6 +9,7 @@ export interface ParticipantData {
   college: string;
   events: string[];
   workshops: string[];
+  summer_internship?: string;
   accommodation: AccommodationStatus | null;
 }
 

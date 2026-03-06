@@ -7,8 +7,15 @@ interface ResultsDisplayProps {
 
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = memo(
   ({ participant }) => {
-    const { name, email, college, events, workshops, accommodation } =
-      participant;
+    const {
+      name,
+      email,
+      college,
+      events,
+      workshops,
+      summer_internship,
+      accommodation,
+    } = participant;
 
     const formatDate = (dateStr: string): string => {
       const date = new Date(dateStr);
@@ -49,6 +56,52 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = memo(
                 <p className="text-lg text-gray-900">
                   {college || "Not provided"}
                 </p>
+              </div>
+
+              {/* Summer Internship */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Summer Internship
+                </h3>
+                <div className="flex items-center gap-2">
+                  {summer_internship === "Yes" ? (
+                    <>
+                      <svg
+                        className="w-5 h-5 text-success-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span className="text-lg font-semibold text-success-700">
+                        Yes
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="w-5 h-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                      <span className="text-lg text-gray-600">No</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
