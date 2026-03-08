@@ -24,6 +24,7 @@ const EVENTS = [
   "Poster Presentation",
   "Code Combat",
   "Debug the code",
+  "BIS",
 ];
 
 interface EventRegistrationFormData {
