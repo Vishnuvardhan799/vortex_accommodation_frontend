@@ -210,14 +210,19 @@ export const ValedictionSection: React.FC<ValedictionSectionProps> = ({
           type: "duplicate",
           message: "Token has already been given to this participant",
         });
-      } else if (response.success && response.participant) {
-        setParticipant(response.participant);
-        onSuccess("Token marked as given successfully!");
       } else if (response.success) {
-        const refreshed = await searchValediction(participant.rollNumber);
-        if (refreshed.found && refreshed.participant)
-          setParticipant(refreshed.participant);
         onSuccess("Token marked as given successfully!");
+        // Clear input after a short delay so volunteer sees the success message
+        setTimeout(() => {
+          setRemaining("");
+          setCustomRoll("");
+          setParticipant(null);
+          setNotFound(false);
+          setRollError(null);
+          setTouched(false);
+          if (isCustomMode) customInputRef.current?.focus();
+          else remainingInputRef.current?.focus();
+        }, 1500);
       }
     } catch (err) {
       const apiError = err as ApiError;
