@@ -6,13 +6,19 @@ A responsive, mobile-friendly web application for event volunteers to manage par
 
 ## Features
 
+- Valediction token management with smart roll number search
+  - Degree-based prefix selection (BTech, MTech, PhD Scholar)
+  - Year selection for BTech (1st-4th) and MTech (1st-2nd)
+  - Auto-search on completing remaining digits (3-4 digits)
+  - Full manual roll number entry as fallback
+  - Mark token as given with one click
 - Fast participant search by email with real-time validation
 - View registration details and accommodation status
 - Add accommodation entries with duplicate detection
 - Register participants for events and workshops
 - Comprehensive error handling with field-specific messages
 - Mobile-responsive design with TailwindCSS
-- Section-based navigation (Search, Accommodation, Events)
+- Section-based navigation (Valediction, Search, Accommodation, Events, Workshops)
 - Lazy loading for optimal performance
 
 ## Tech Stack
@@ -115,8 +121,9 @@ npm run test:coverage
 ```
 src/
 ├── components/                      # React components
-│   ├── Navbar.tsx                   # Navigation component
-│   ├── SearchComponent.tsx          # Participant search
+│   ├── Navbar.tsx                   # Navigation (Valediction, Search, Accommodation, Events, Workshops)
+│   ├── ValedictionSection.tsx       # Valediction token search & marking
+│   ├── SearchComponent.tsx          # Participant search by email
 │   ├── ResultsDisplay.tsx           # Search results display
 │   ├── AccommodationForm.tsx        # Accommodation entry form
 │   ├── DuplicateWarningModal.tsx    # Duplicate confirmation modal
@@ -139,19 +146,28 @@ src/
 
 ## Application Sections
 
-The app uses section-based navigation:
+The app uses section-based navigation (Valediction is the default landing page):
 
-1. **Search Section** (Landing page)
+1. **Valediction Section** (Landing page)
+   - Search participants by 9-digit roll number
+   - Smart prefix selection: pick degree (BTech/MTech/PhD), then year, then type 3-4 remaining digits
+   - Auto-search triggers when digits are complete
+   - "Type full number" fallback for unusual roll numbers
+   - View participant details (name, gender, year, food preference)
+   - Mark valediction token as given
+   - Token status display (given/not given with timestamp)
+
+2. **Search Section**
    - Search participants by email
    - View registration and accommodation details
    - Quick access to add accommodation
 
-2. **Accommodation Section**
+3. **Accommodation Section**
    - Add new accommodation entries
    - Duplicate detection and confirmation
    - Form validation with error messages
 
-3. **Events & Workshops Section**
+4. **Events & Workshops Sections**
    - Register participants for events
    - Register participants for workshops
    - Real-time validation

@@ -124,3 +124,30 @@ export type AccommodationType = typeof ACCOMMODATION_TYPES[number];
 // Payment status types
 export const PAYMENT_STATUSES = ['Paid', 'Pending', 'Waived'] as const;
 export type PaymentStatus = typeof PAYMENT_STATUSES[number];
+
+// --- Valediction Token Types ---
+
+export interface ValedictionParticipant {
+  rollNumber: string;
+  name: string;
+  email?: string;
+  gender?: string;
+  year?: string;
+  foodPreference?: string;
+  tokenGiven: boolean;
+  givenBy?: string;
+  givenAt?: string;
+}
+
+export interface ValedictionSearchResponse {
+  found: boolean;
+  participant?: ValedictionParticipant;
+  message?: string;
+}
+
+export interface ValedictionMarkTokenResponse {
+  success: boolean;
+  message: string;
+  alreadyGiven: boolean;
+  participant?: ValedictionParticipant;
+}

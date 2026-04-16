@@ -37,6 +37,12 @@ const DuplicateWarningModal = lazy(() =>
   })),
 );
 
+const ValedictionSection = lazy(() =>
+  import("./components/ValedictionSection").then((module) => ({
+    default: module.ValedictionSection,
+  })),
+);
+
 // Loading fallback component
 const LoadingFallback: React.FC = () => (
   <div className="flex items-center justify-center p-8">
@@ -60,7 +66,7 @@ interface AppState {
 
 function App() {
   const [state, setState] = useState<AppState>({
-    activeSection: "search",
+    activeSection: "valediction",
     searchResults: null,
     error: null,
     isSearching: false,
@@ -336,6 +342,23 @@ function App() {
           <div className="max-w-2xl mx-auto mb-6">
             <ErrorDisplay error={state.error} onDismiss={handleDismissError} />
           </div>
+        )}
+
+        {/* Valediction Section */}
+        {state.activeSection === "valediction" && (
+          <section>
+            <Suspense fallback={<LoadingFallback />}>
+              <ValedictionSection
+                onError={(error) => setState((prev) => ({ ...prev, error }))}
+                onSuccess={(message) =>
+                  setState((prev) => ({
+                    ...prev,
+                    successMessage: message,
+                  }))
+                }
+              />
+            </Suspense>
+          </section>
         )}
 
         {/* Search Section */}

@@ -10,6 +10,8 @@ import type {
   WorkshopRegistrationResponse,
   ApiError,
   ErrorState,
+  ValedictionSearchResponse,
+  ValedictionMarkTokenResponse,
 } from '../types';
 
 /**
@@ -165,6 +167,22 @@ class ApiClient {
   }
 
   /**
+   * Search for valediction participant by roll number
+   */
+  async searchValediction(rollNumber: string): Promise<ValedictionSearchResponse> {
+    const response = await this.client.post<ValedictionSearchResponse>('/api/valediction/search', { rollNumber });
+    return response.data;
+  }
+
+  /**
+   * Mark valediction token as given
+   */
+  async markValedictionToken(rollNumber: string): Promise<ValedictionMarkTokenResponse> {
+    const response = await this.client.post<ValedictionMarkTokenResponse>('/api/valediction/mark-token', { rollNumber });
+    return response.data;
+  }
+
+  /**
    * Health check
    */
   async healthCheck(): Promise<{ status: string }> {
@@ -181,4 +199,6 @@ export const searchParticipant = (email: string) => apiClient.searchParticipant(
 export const addAccommodation = (data: AccommodationRequest) => apiClient.addAccommodation(data);
 export const registerEvent = (data: EventRegistrationRequest) => apiClient.registerEvent(data);
 export const registerWorkshop = (data: WorkshopRegistrationRequest) => apiClient.registerWorkshop(data);
+export const searchValediction = (rollNumber: string) => apiClient.searchValediction(rollNumber);
+export const markValedictionToken = (rollNumber: string) => apiClient.markValedictionToken(rollNumber);
 export const healthCheck = () => apiClient.healthCheck();
